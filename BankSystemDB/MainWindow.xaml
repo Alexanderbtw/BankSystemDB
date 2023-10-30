@@ -1,0 +1,115 @@
+﻿<Window x:Class="Homework_18.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Homework_18"
+        xmlns:ctrl="clr-namespace:TreeViewExtension;assembly=TreeViewExtension"
+        xmlns:conv="clr-namespace:Homework_18.Converter"
+        mc:Ignorable="d"
+        Title="Банк" Height="450" Width="800">
+    <Window.Resources>
+        <conv:DecimalToFormatStringConverter x:Key="decimalToFormatStringConverter" />
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+
+        <Menu Grid.Row="0">
+            <MenuItem Header="Департаменты">
+                <MenuItem Header="Добавить"  Command="{Binding AddDepartment}" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"/>
+                <MenuItem Header="Добавить дочерний"  Command="{Binding AddChildDepartment}" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"/>
+                <MenuItem Header="Редактировать" Command="{Binding EditDepartment}" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"/>
+                <MenuItem Header="Удалить"  Command="{Binding RemoveDepartment}"/>
+            </MenuItem>
+            <MenuItem Header="Клиенты">
+                <MenuItem Header="Добавить"  Command="{Binding AddClient}" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"/>
+                <MenuItem Header="Редактировать"  Command="{Binding EditClient}" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"/>
+                <MenuItem Header="Удалить"  Command="{Binding RemoveClient}"/>
+            </MenuItem>
+        </Menu>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="350"/>
+            </Grid.ColumnDefinitions>
+
+            <ctrl:TreeViewExt Grid.Column="0" ItemsSource="{Binding Nodes}" SelectedItem_="{Binding SelectedNode, Mode=TwoWay}">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Id}" HorizontalAlignment="Left" Margin="0 0 10 0"/>
+                            <TextBlock Text="{Binding Name}" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </ctrl:TreeViewExt>
+
+            <ListView Grid.Column="1" ItemsSource="{Binding ClientsInDepartment}" SelectedItem="{Binding SelectedClient}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Ид" DisplayMemberBinding="{Binding Id}" Width="30"/>
+                        <GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Name}" Width="160"/>
+                        <GridViewColumn Header="Ид Группы" DisplayMemberBinding="{Binding DepartmentId}" Width="100"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <ScrollViewer Grid.Column="2">
+                <StackPanel Margin="10">
+                    <StackPanel>
+                        <TextBlock Grid.Column="0" FontWeight="Bold" Text="Информация по клиенту"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="5" Text="Имя:"/>
+                            <TextBlock Margin="5" Text="{Binding SelectedClient.Name}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Основной счет" Margin="5 0 5 0"/>
+                            <TextBlock Text="Баланс:" Margin="5 0 5 0" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding Account.Balance, Converter={StaticResource decimalToFormatStringConverter}}" Margin="5 0 5 0"/>
+                        </StackPanel>
+                    </StackPanel>
+
+
+
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="0.6*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" FontWeight="Bold" Text="Вклады"/>
+                            <Button Grid.Column="1" Content="Открыть вклад" Command="{Binding AddDeposit}"/>
+                        </Grid>
+
+                        <ListView ItemsSource="{Binding Deposits}" HorizontalAlignment="Left" Width="300" BorderThickness="0">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Id}" Margin="2"/>
+                                        <TextBlock Text="{Binding Name}" Margin="2"/>
+                                        <TextBlock Text="{Binding Balance, Converter={StaticResource decimalToFormatStringConverter}}" Margin="2"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+
+
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold" Text="Переводы"/>
+                        <Button Content="Перевод другому клиенту" Command="{Binding SendTo}" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"/>
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+
+        </Grid>
+
+    </Grid>
+</Window>
